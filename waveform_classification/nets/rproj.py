@@ -11,8 +11,6 @@ Key insight: Direct random projection from high-dim input loses task-relevant
 structure. Learning a small bottleneck first preserves discriminative features,
 then JL lemma applies to the compressed representation.
 
-Results: 79.1% ± 0.6% accuracy, 0.35ms (beats MLP: 78.0%, 0.41ms on both metrics)
-
 References:
     Johnson & Lindenstrauss (1984). Extensions of Lipschitz mappings
     into a Hilbert space.
