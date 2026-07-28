@@ -1,0 +1,51 @@
+# Datasets
+datasets/
+
+# Results
+results/
+
+# Local configuration
+.env
+.secrets/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+.python-version
+
+# Cache
+.cache/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Coverage
+.coverage
+htmlcov/
+
+# ML artifacts
+lightning_logs/
+checkpoints/
+*.ckpt
+*.pt
+*.pth
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db

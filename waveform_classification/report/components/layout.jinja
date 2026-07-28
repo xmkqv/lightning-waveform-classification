@@ -1,0 +1,172 @@
+{% from "stats.jinja" import stats %}
+{% from "results.jinja" import results %}
+{% from "architectures.jinja" import architectures %}
+{% from "hparams.jinja" import hparams %}
+{% from "reference.jinja" import reference %}
+{% from "blocks/card.jinja" import card %}
+{% from "blocks/grid.jinja" import grid %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-3.3.0.min.js"></script>
+    <style>
+        :root {
+            --accent: #2d8a7a;
+            --surface: #f8f7f4;
+            --border: #dcdad6;
+            --text: #1a1a18;
+            --text-muted: #5a6268;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Source Sans 3', system-ui, sans-serif;
+            background: var(--surface);
+            color: var(--text);
+            line-height: 1.5;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        h2 { font-size: 1.25rem; color: var(--accent); margin: 2rem 0 1rem; }
+        h3 { font-size: 1rem; margin-bottom: 1rem; }
+        .subtitle { color: var(--text-muted); margin-bottom: 2rem; }
+        .grid { display: grid; gap: 1.5rem; }
+        .grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-4 { grid-template-columns: repeat(4, 1fr); }
+        .grid-5 { grid-template-columns: repeat(5, 1fr); }
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1rem;
+        }
+        .stat { text-align: center; }
+        .stat-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); }
+        .stat-value { font-size: 1.5rem; font-weight: 700; }
+        .stat-desc { font-size: 0.75rem; color: var(--text-muted); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+        th { font-weight: 600; background: var(--surface); }
+        tr:hover { background: rgba(45, 138, 122, 0.05); }
+        .rank-1 { background: rgba(45, 138, 122, 0.15); border-left: 3px solid var(--accent); font-weight: 700; }
+        .rank-2 { background: rgba(45, 138, 122, 0.08); border-left: 2px solid rgba(45, 138, 122, 0.5); font-weight: 500; }
+        .rank-best { background: var(--accent); color: white; }
+        .rank-good { background: rgba(45, 138, 122, 0.2); color: var(--accent); }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-primary { background: var(--accent); color: white; }
+        .badge-light { background: rgba(45, 138, 122, 0.1); color: var(--accent); }
+        code {
+            background: rgba(45, 138, 122, 0.1);
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+        .mono { font-family: monospace; font-size: 0.85rem; }
+        .muted { color: var(--text-muted); }
+        ul.config-list { list-style: none; padding: 0; }
+        ul.config-list li { padding: 0.4rem 0; border-bottom: 1px solid var(--border); }
+        ul.config-list li:last-child { border-bottom: none; }
+        .arch-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .footer {
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        @media (max-width: 900px) {
+            .grid-2, .grid-3, .grid-4, .grid-5 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ heading }}</h1>
+    <p class="subtitle">{{ subtitle }}</p>
+
+    {# Summary stats - schema driven #}
+    {{ stats(summary_stats) }}
+
+    {# Results table - schema driven #}
+    {% if results_data %}
+    <h2>Test Results</h2>
+    {{ results(results_data.headers, results_data.rows) }}
+    {% endif %}
+
+    {# Charts - data driven #}
+    {% if charts.comparison or charts.efficiency %}
+    <h2>Model Comparison</h2>
+    {% call grid(2) %}
+        {% if charts.comparison %}{% call card() %}{{ charts.comparison }}{% endcall %}{% endif %}
+        {% if charts.efficiency %}{% call card() %}{{ charts.efficiency }}{% endcall %}{% endif %}
+    {% endcall %}
+    {% endif %}
+
+    {% if charts.radar or charts.f1_by_class %}
+    {% call grid(2) %}
+        {% if charts.radar %}{% call card() %}{{ charts.radar }}{% endcall %}{% endif %}
+        {% if charts.f1_by_class %}{% call card() %}{{ charts.f1_by_class }}{% endcall %}{% endif %}
+    {% endcall %}
+    {% endif %}
+
+    {% if charts.training %}
+    <h2>Training Dynamics</h2>
+    {% call card() %}{{ charts.training }}{% endcall %}
+    {% endif %}
+
+    {# Architecture cards - schema driven #}
+    {% if arch_data %}
+    <h2>Architectures</h2>
+    {{ architectures(arch_data) }}
+    {% endif %}
+
+    {# Hyperparameters table - schema driven #}
+    {% if hparams_data %}
+    <h2>Hyperparameters</h2>
+    {{ hparams(hparams_data.headers, hparams_data.rows) }}
+    {% endif %}
+
+    {# Reference section #}
+    <h2>Reference</h2>
+    {{ reference(classes, config, evaluation) }}
+
+    {# Data overview #}
+    {% if charts.class_dist %}
+    <h2>Data Overview</h2>
+    {% call card() %}{{ charts.class_dist }}{% endcall %}
+    {% endif %}
+
+    {# Sample waveforms #}
+    {% if waveforms %}
+    <h2>Sample Waveforms</h2>
+    {% call grid(3) %}
+        {% for wf in waveforms %}
+        {% call card() %}{{ wf }}{% endcall %}
+        {% endfor %}
+    {% endcall %}
+    {% endif %}
+
+    <div class="footer">
+        <span>{{ footer.left }}</span>
+        <span>{{ footer.center }}</span>
+        <span>{{ footer.right }}</span>
+    </div>
+</body>
+</html>

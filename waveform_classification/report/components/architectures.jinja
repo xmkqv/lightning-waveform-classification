@@ -1,0 +1,22 @@
+{% from "blocks/badge.jinja" import badge %}
+{% from "blocks/card.jinja" import card %}
+{% from "blocks/grid.jinja" import grid %}
+
+{# Schema-driven architecture cards with diagrams #}
+{% macro architectures(items) %}
+{% if items %}
+{% call grid([items|length, 3]|min) %}
+{% for item in items %}
+    {% call card() %}
+    <div class="arch-header">
+        {{ badge(item.name, primary=true) }}
+        <span class="stat-desc">{{ item.params }} params</span>
+    </div>
+    {% if item.diagram %}
+    <img src="{{ item.diagram }}" alt="{{ item.name }} architecture" style="width: 100%; margin: 0.5rem 0;">
+    {% endif %}
+    {% endcall %}
+{% endfor %}
+{% endcall %}
+{% endif %}
+{% endmacro %}

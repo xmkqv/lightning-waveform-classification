@@ -1,0 +1,11 @@
+{% from "blocks/card.jinja" import card %}
+{% from "blocks/table.jinja" import table %}
+
+{# Schema-driven hparams table: headers and rows from schema #}
+{% macro hparams(headers, rows) %}
+{% if rows %}
+{% call card() %}
+{{ table(headers, rows) }}
+{% endcall %}
+{% endif %}
+{% endmacro %}

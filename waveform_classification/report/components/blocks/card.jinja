@@ -1,0 +1,3 @@
+{% macro card(class="") -%}
+<div class="card{{ ' ' + class if class else '' }}">{{ caller() }}</div>
+{%- endmacro %}

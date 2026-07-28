@@ -1,0 +1,3 @@
+{% macro badge(text, primary=false) -%}
+<span class="badge {{ 'badge-primary' if primary else 'badge-light' }}">{{ text }}</span>
+{%- endmacro %}

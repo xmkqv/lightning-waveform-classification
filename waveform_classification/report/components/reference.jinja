@@ -1,0 +1,41 @@
+{% from "blocks/card.jinja" import card %}
+{% from "blocks/grid.jinja" import grid %}
+
+{# Reference section: classification target, training config, and evaluation metrics #}
+{% macro reference(classes, config, evaluation) %}
+{% call grid(3) %}
+    {% call card() %}
+    <h3>Classification Target</h3>
+    <table>
+        <thead>
+            <tr><th scope="col">Class</th><th scope="col">Type</th><th scope="col">Characteristic</th></tr>
+        </thead>
+        <tbody>
+        {% for c in classes %}
+            <tr>
+                <td><code>{{ c.code }}</code></td>
+                <td>{{ c.type }}</td>
+                <td>{{ c.desc }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endcall %}
+    {% call card() %}
+    <h3>Training Configuration</h3>
+    <ul class="config-list">
+    {% for item in config %}
+        <li><strong>{{ item.key }}:</strong> {{ item.value }}</li>
+    {% endfor %}
+    </ul>
+    {% endcall %}
+    {% call card() %}
+    <h3>Evaluation Metrics</h3>
+    <ul class="config-list">
+    {% for item in evaluation %}
+        <li><strong>{{ item.key }}:</strong> {{ item.value }}</li>
+    {% endfor %}
+    </ul>
+    {% endcall %}
+{% endcall %}
+{% endmacro %}

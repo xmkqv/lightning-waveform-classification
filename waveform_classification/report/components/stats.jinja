@@ -1,0 +1,16 @@
+{% from "blocks/card.jinja" import card %}
+{% from "blocks/stat.jinja" import stat %}
+{% from "blocks/grid.jinja" import grid %}
+
+{# Schema-driven stats: iterates over fields, no hardcoded names #}
+{% macro stats(items) %}
+{% if items %}
+{% call grid(items|length) %}
+    {% for item in items %}
+    {% call card("stat") %}{{ stat(item.label, item.value, item.desc) }}{% endcall %}
+    {% endfor %}
+{% endcall %}
+{% else %}
+{% call card() %}No training runs found.{% endcall %}
+{% endif %}
+{% endmacro %}
