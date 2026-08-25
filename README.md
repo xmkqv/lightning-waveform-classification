@@ -5,7 +5,7 @@ lightning waveforms. Every model trains on one shared stratified split with the
 same metrics, records single-waveform inference time, and exports the comparison
 as a static HTML report.
 
-[![CI](https://github.com/xmkqv/lightning-waveform-classification/actions/workflows/ci.yml/badge.svg)](https://github.com/xmkqv/lightning-waveform-classification/actions/workflows/ci.yml)
+[![CI](https://github.com/xmkqv/lightning-waveform-classification/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/xmkqv/lightning-waveform-classification/actions/workflows/ci.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![python 3.13+](https://img.shields.io/badge/python-3.13%2B-blue.svg)](pyproject.toml)
 
