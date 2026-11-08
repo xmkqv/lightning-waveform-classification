@@ -1,15 +1,60 @@
-# Lightning waveform classification
+# lightning waveform classification
 
-This project compares compact neural architectures for classifying 1,000-sample
-lightning waveforms. It trains each model with the same data split and metrics,
-records single-waveform inference time, and exports the comparison as a static
-HTML report.
+Compares seven compact neural architectures for classifying 1,000-sample
+lightning waveforms. Every model trains on one shared stratified split with the
+same metrics, records single-waveform inference time, and exports the comparison
+as a static HTML report.
 
-The repository is an experimental research codebase. It is useful for comparing
-model design choices, but it is not a production classifier or a published
-benchmark.
+[![CI](https://github.com/xmkqv/lightning-waveform-classification/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/xmkqv/lightning-waveform-classification/actions/workflows/ci.yml)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![python 3.13+](https://img.shields.io/badge/python-3.13%2B-blue.svg)](pyproject.toml)
 
-## What is included
+This is an experimental research codebase, useful for comparing model design
+choices. It is not a production classifier or a published benchmark. No results
+ship with it: the source dataset is not redistributable, so every number has to
+be regenerated from your own data.
+
+## quickstart
+
+Python 3.13 and [uv](https://docs.astral.sh/uv/) are required.
+
+```bash
+uv sync --locked --dev
+```
+
+These two run on a fresh clone, with no dataset:
+
+```bash
+uv run pytest
+uv run python scripts/run.py --help
+```
+
+Training needs data. Place ten NumPy arrays under `datasets/waveform/lightning`,
+named `01.npy` through `09.npy` plus `010.npy`, one per class, each of shape
+`(n_samples, 1000)`. Class order is defined by `Data.classnames` in
+`waveform_classification/data/lightning.py`. Dataset files are excluded from
+Git; see [DATA.md](DATA.md) for the data policy and provenance checklist.
+
+Train one model:
+
+```bash
+uv run python scripts/run.py mlp
+```
+
+Run the full comparison and write `results/report.html`:
+
+```bash
+uv run python scripts/run-complete.py
+```
+
+The full comparison trains seven models across five seeds. Use
+`uv run python scripts/run-complete.py --minimal` for a short pipeline check:
+one seed, two epochs.
+
+`RESULTS_DIR` defaults to `results` and `LOG_DIR` defaults to `.cache/logs`.
+Copy `.env.example` to `.env` to override either path.
+
+## what is included
 
 - Seven PyTorch Lightning models: MLP, FCN, bottleneck, DCT, DPPV, random
   projection, and wavelet variants
@@ -22,7 +67,7 @@ benchmark.
 The generated report and experiment logs are not tracked. Rebuild them from your
 own data so that the code and the reported evidence stay in sync.
 
-## Architecture
+## architecture
 
 ```text
 NumPy waveforms
@@ -39,47 +84,9 @@ training behavior. `waveform_classification/report` reads completed runs and
 renders the report. The scripts in `scripts` configure training and multi-model
 runs.
 
-## Setup
+## validate
 
-Python 3.13 and [uv](https://docs.astral.sh/uv/) are required.
-
-```bash
-uv sync --locked --dev
-```
-
-The environment file is optional. `RESULTS_DIR` defaults to `results` and
-`LOG_DIR` defaults to `.cache/logs`. Copy `.env.example` to `.env` if you use
-direnv and want to override either path.
-
-Place the dataset under `datasets/waveform/lightning`. The loader expects ten
-NumPy arrays named `01.npy` through `09.npy`, plus `010.npy`. Each array must have
-shape `(n_samples, 1000)`. Dataset files are intentionally excluded from Git.
-See [DATA.md](DATA.md) for the data policy and provenance checklist.
-
-## Run an experiment
-
-Inspect the model-specific options before starting a run:
-
-```bash
-uv run python scripts/run.py --help
-```
-
-Run one model:
-
-```bash
-uv run python scripts/run.py mlp
-```
-
-Run the complete comparison and write `results/report.html`:
-
-```bash
-uv run python scripts/run-complete.py
-```
-
-The full comparison trains seven models across five seeds. Use
-`uv run python scripts/run-complete.py --minimal` for a short pipeline check.
-
-## Validate
+The same chain runs in CI on every push:
 
 ```bash
 uv run ruff check .
@@ -89,14 +96,14 @@ uv run pytest
 uv build
 ```
 
-## Limits and status
+## limits and status
 
 - The source dataset is not distributed with this repository
 - Performance depends on the supplied dataset and hardware
 - The timing metric measures a batch of one on the selected accelerator
 - No package release or stable API is promised at version 0.1.0
 
-## Reuse
+## license
 
 Released under the [MIT License](LICENSE). Dataset rights are separate and are
 described in [DATA.md](DATA.md).
